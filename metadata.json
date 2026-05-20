@@ -1,0 +1,6 @@
+{
+  "name": "KFC Indonesia",
+  "description": "Aplikasi portal online resmi KFC Indonesia untuk menu, promo khusus, pemesanan online, serta registrasi dan login pelanggan secara interaktif.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
