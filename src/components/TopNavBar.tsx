@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Screen, UserSession } from '../types';
 import { LogIn, LogOut, ShoppingBag, Menu as MenuIcon, X } from 'lucide-react';
 
@@ -63,8 +64,7 @@ export default function TopNavBar({
         <button
           id="brand-logo"
           onClick={() => onScreenChange('HOME')}
-          className="font-display-xl text-display-xl font-bold text-primary uppercase tracking-tighter cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
-          style={{ fontSize: '32px' }}
+          className="font-display-xl font-bold text-primary uppercase tracking-tighter cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded text-2xl md:text-3xl lg:text-[32px]"
         >
           KFC Indonesia
         </button>
@@ -91,7 +91,7 @@ export default function TopNavBar({
         </div>
 
         {/* Right Interactions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           {/* Cart Icon trigger */}
           <button
             id="nav-cart-btn"
@@ -124,7 +124,7 @@ export default function TopNavBar({
             <button
               id="login-btn-header"
               onClick={() => onScreenChange('LOGIN')}
-              className="bg-primary text-on-primary font-label-bold text-label-bold uppercase px-6 py-3 rounded-full hover:bg-primary-container transition-all active:scale-95 shadow-sm hover:shadow cursor-pointer"
+              className="hidden md:block bg-primary text-on-primary font-label-bold text-label-bold uppercase px-6 py-3 rounded-full hover:bg-primary-container transition-all active:scale-95 shadow-sm hover:shadow cursor-pointer"
             >
               Login
             </button>
@@ -142,58 +142,66 @@ export default function TopNavBar({
       </div>
 
       {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t-2 border-secondary-fixed bg-surface px-4 py-4 space-y-3 absolute top-20 left-0 w-full shadow-lg z-40">
-          <div className="grid grid-cols-2 gap-4">
-            {navLinks.map((link) => {
-              const isActive = currentScreen === link.id;
-              return (
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -20, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="md:hidden border-t-2 border-secondary-fixed bg-surface px-4 py-4 space-y-3 absolute top-20 left-0 w-full shadow-lg z-40 overflow-hidden"
+          >
+            <div className="grid grid-cols-2 gap-4">
+              {navLinks.map((link) => {
+                const isActive = currentScreen === link.id;
+                return (
+                  <button
+                    key={link.id}
+                    onClick={() => {
+                      onScreenChange(link.id);
+                      setMobileMenuOpen(false);
+                    }}
+                    className={`py-3 px-4 rounded font-label-bold text-label-bold uppercase text-center transition-colors ${
+                      isActive
+                        ? 'bg-primary text-white'
+                        : 'bg-white border border-gray-200 text-on-surface hover:bg-gray-50'
+                    }`}
+                  >
+                    {link.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {userSession ? (
+              <div className="pt-4 border-t border-gray-200 flex items-center justify-between">
+                <span className="text-sm font-semibold text-on-surface">
+                  Masuk sebagai: {userSession.fullName}
+                </span>
                 <button
-                  key={link.id}
                   onClick={() => {
-                    onScreenChange(link.id);
+                    onLogout();
                     setMobileMenuOpen(false);
                   }}
-                  className={`py-3 px-4 rounded font-label-bold text-label-bold uppercase text-center transition-colors ${
-                    isActive
-                      ? 'bg-primary text-white'
-                      : 'bg-white border border-gray-200 text-on-surface hover:bg-gray-50'
-                  }`}
+                  className="text-primary font-label-bold text-xs uppercase flex items-center gap-1"
                 >
-                  {link.label}
+                  <LogOut className="w-4 h-4" /> Keluar
                 </button>
-              );
-            })}
-          </div>
-
-          {userSession ? (
-            <div className="pt-4 border-t border-gray-200 flex items-center justify-between">
-              <span className="text-sm font-semibold text-on-surface">
-                Masuk sebagai: {userSession.fullName}
-              </span>
+              </div>
+            ) : (
               <button
                 onClick={() => {
-                  onLogout();
+                  onScreenChange('LOGIN');
                   setMobileMenuOpen(false);
                 }}
-                className="text-primary font-label-bold text-xs uppercase flex items-center gap-1"
+                className="w-full bg-primary text-white text-center py-3 rounded font-label-bold text-label-bold uppercase hover:bg-primary-container mt-4"
               >
-                <LogOut className="w-4 h-4" /> Keluar
+                Login
               </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => {
-                onScreenChange('LOGIN');
-                setMobileMenuOpen(false);
-              }}
-              className="w-full bg-primary text-white text-center py-3 rounded font-label-bold text-label-bold uppercase hover:bg-primary-container"
-            >
-              Login
-            </button>
-          )}
-        </div>
-      )}
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
